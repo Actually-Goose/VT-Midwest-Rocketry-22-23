@@ -1,0 +1,38 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <SerialStream.h>
+
+using namespace std;
+
+int main()
+{
+    // Open serial port
+    LibSerial::SerialStream serialPort;
+    serialPort.Open("/dev/ttyUSB0"); // Replace with the name of the Teensy serial port on your computer
+    serialPort.SetBaudRate(LibSerial::SerialStreamBuf::BAUD_9600);
+    serialPort.SetCharSize(LibSerial::SerialStreamBuf::CHAR_SIZE_8);
+    serialPort.SetNumOfStopBits(1);
+    serialPort.SetParity(LibSerial::SerialStreamBuf::PARITY_NONE);
+
+    // Open output file for data storage
+    ofstream outputFile("data.txt");
+    if (!outputFile.is_open()) {
+        cout << "Failed to open output file" << endl;
+        return 1;
+    }
+
+    // Read data from serial port and store in file
+    while (true) {
+        string data;
+        getline(serialPort, data);
+        outputFile << data << endl;
+        cout << data << endl; // Optional: print received data to console
+    }
+
+    // Close output file and serial port (unreachable code)
+    outputFile.close();
+    serialPort.Close();
+
+    return 0;
+}
